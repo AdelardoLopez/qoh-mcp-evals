@@ -102,3 +102,15 @@ def test_grounded_answer_has_no_ungrounded_numbers():
     out = '{"warehouses": [{"qty_physical": 340, "price": 12.89, "updated_at": "2026-10-22"}]}'
     ans = "Hay 340 unidades a $12.89, actualizado el 22 de octubre de 2026."
     assert graders.ungrounded_numbers(ans, "pregunta", [out]) == []
+
+
+def test_decimal_with_trailing_zero_is_grounded():
+    # H02 real: "$9.10" se marcaba como 910 inventado y disparaba una reflexión innecesaria
+    out = '{"price": 9.1}'
+    assert graders.ungrounded_numbers("Tiene un precio de $9.10.", "q", [out]) == []
+
+
+def test_thousands_separator_is_grounded():
+    # Q07 real: "$6,599.68" se marcaba como 6.59968 inventado
+    out = '{"inventory_value": 6599.68}'
+    assert graders.ungrounded_numbers("El valor es de $6,599.68.", "q", [out]) == []

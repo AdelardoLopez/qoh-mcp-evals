@@ -1,0 +1,418 @@
+{
+  "model": "qwen2.5:7b",
+  "judge_model": "qwen2.5:7b",
+  "system_prompt_version": "v3",
+  "eval_file": "eval_holdout_qoh.yaml",
+  "ollama_options": {
+    "temperature": 0,
+    "num_ctx": 8192
+  },
+  "ground_check": true,
+  "grader_version": "g5",
+  "summary": {
+    "n": 8,
+    "n_completed": 8,
+    "pass_rate": 0.875,
+    "tool_accuracy": 1.0,
+    "avg_latency_s": 45.78,
+    "avg_tool_calls": 1.38,
+    "total_tokens": 21497,
+    "max_tokens_in": 4376,
+    "grounded_rate": 1.0,
+    "ungrounded": [],
+    "by_categoria": {
+      "consulta_directa": {
+        "n": 2,
+        "pass_rate": 1.0
+      },
+      "agregacion": {
+        "n": 1,
+        "pass_rate": 1.0
+      },
+      "comparacion": {
+        "n": 1,
+        "pass_rate": 0.0
+      },
+      "caso_limite": {
+        "n": 1,
+        "pass_rate": 1.0
+      },
+      "fuera_de_alcance": {
+        "n": 1,
+        "pass_rate": 1.0
+      },
+      "varios_pasos": {
+        "n": 1,
+        "pass_rate": 1.0
+      },
+      "abierta": {
+        "n": 1,
+        "pass_rate": 1.0
+      }
+    },
+    "failed": [
+      "H04"
+    ],
+    "infra_errors": []
+  },
+  "results": [
+    {
+      "id": "H01",
+      "categoria": "consulta_directa",
+      "metodo": "exact_match",
+      "pregunta": "¿Cuántas unidades físicas hay del SKU WRP-0012 en el almacén B?",
+      "passed": true,
+      "details": {
+        "numbers_found": [
+          75.0
+        ]
+      },
+      "tool_ok": true,
+      "tool_details": {
+        "expected": [
+          "get_stock"
+        ],
+        "called": [
+          "get_stock"
+        ],
+        "unknown_args": {}
+      },
+      "answer": "En el almacén B, hay 75 unidades físicas del SKU WRP-0012.",
+      "calls": [
+        {
+          "name": "get_stock",
+          "args": {
+            "sku": "WRP-0012",
+            "warehouse": "B"
+          },
+          "unknown_args": [],
+          "output": "{\n  \"found\": true,\n  \"sku\": \"WRP-0012\",\n  \"description\": \"Spiral wrap 1/4in\",\n  \"warehouses\": [\n    {\n      \"warehouse\": \"B\",\n      \"qty_physical\": 75,\n      \"qty_virtual\": 70,\n      \"reorder_point\": 40,\n      \"price\": 3.25,\n      \"updated_at\": \"2026-10-22\",\n      \"inventory_value\": 243.75\n    }\n  ]\n}"
+        }
+      ],
+      "latency_s": 58.58,
+      "tokens_in": 1899,
+      "tokens_out": 57,
+      "hit_max_steps": false,
+      "ungrounded_numbers": [],
+      "reflections": 0
+    },
+    {
+      "id": "H02",
+      "categoria": "consulta_directa",
+      "metodo": "numeric_tolerance",
+      "pregunta": "¿Qué precio tiene el SKU HSE-0501 en el almacén A?",
+      "passed": true,
+      "details": {
+        "numbers_found": [
+          9.1,
+          910.0
+        ]
+      },
+      "tool_ok": true,
+      "tool_details": {
+        "expected": [
+          "get_stock"
+        ],
+        "called": [
+          "get_stock",
+          "get_stock"
+        ],
+        "unknown_args": {}
+      },
+      "answer": "El SKU HSE-0501 en el almacén A tiene un precio de $9.10.",
+      "calls": [
+        {
+          "name": "get_stock",
+          "args": {
+            "sku": "HSE-0501",
+            "warehouse": "A"
+          },
+          "unknown_args": [],
+          "output": "{\n  \"found\": true,\n  \"sku\": \"HSE-0501\",\n  \"description\": \"Heat shrink kit 560pcs\",\n  \"warehouses\": [\n    {\n      \"warehouse\": \"A\",\n      \"qty_physical\": 44,\n      \"qty_virtual\": 44,\n      \"reorder_point\": 15,\n      \"price\": 9.1,\n      \"updated_at\": \"2026-10-22\",\n      \"inventory_value\": 400.4\n    }\n  ]\n}"
+        },
+        {
+          "name": "get_stock",
+          "args": {
+            "warehouse": "A",
+            "sku": "HSE-0501"
+          },
+          "unknown_args": [],
+          "output": "{\n  \"found\": true,\n  \"sku\": \"HSE-0501\",\n  \"description\": \"Heat shrink kit 560pcs\",\n  \"warehouses\": [\n    {\n      \"warehouse\": \"A\",\n      \"qty_physical\": 44,\n      \"qty_virtual\": 44,\n      \"reorder_point\": 15,\n      \"price\": 9.1,\n      \"updated_at\": \"2026-10-22\",\n      \"inventory_value\": 400.4\n    }\n  ]\n}"
+        }
+      ],
+      "latency_s": 48.12,
+      "tokens_in": 4248,
+      "tokens_out": 129,
+      "hit_max_steps": false,
+      "ungrounded_numbers": [],
+      "reflections": 1
+    },
+    {
+      "id": "H03",
+      "categoria": "agregacion",
+      "metodo": "exact_match",
+      "pregunta": "¿Cuántas unidades físicas suma el SKU DCT-3310 entre los dos almacenes?",
+      "passed": true,
+      "details": {
+        "numbers_found": [
+          95.0
+        ]
+      },
+      "tool_ok": true,
+      "tool_details": {
+        "expected": [
+          "get_stock"
+        ],
+        "called": [
+          "get_stock"
+        ],
+        "unknown_args": {}
+      },
+      "answer": "El SKU DCT-3310 suma un total de 95 unidades físicas entre los almacenes A y B.",
+      "calls": [
+        {
+          "name": "get_stock",
+          "args": {
+            "sku": "DCT-3310",
+            "warehouse": null
+          },
+          "unknown_args": [],
+          "output": "{\n  \"found\": true,\n  \"sku\": \"DCT-3310\",\n  \"description\": \"Wire duct 1x2in gray\",\n  \"warehouses\": [\n    {\n      \"warehouse\": \"A\",\n      \"qty_physical\": 5,\n      \"qty_virtual\": 20,\n      \"reorder_point\": 50,\n      \"price\": 9.99,\n      \"updated_at\": \"2026-10-19\",\n      \"inventory_value\": 49.95\n    },\n    {\n      \"warehouse\": \"B\",\n      \"qty_physical\": 90,\n      \"qty_virtual\": 88,\n      \"reorder_point\": 50,\n      \"price\": 9.99,\n      \"updated_at\": \"2026-10-19\",\n      \"inventory_value\": 899.1\n    }\n  ],\n  \"total\": {\n    \"qty_physical\": 95,\n    \"inventory_value\": 949.05\n  }\n}"
+        }
+      ],
+      "latency_s": 26.62,
+      "tokens_in": 2003,
+      "tokens_out": 60,
+      "hit_max_steps": false,
+      "ungrounded_numbers": [],
+      "reflections": 0
+    },
+    {
+      "id": "H04",
+      "categoria": "comparacion",
+      "metodo": "precision_recall",
+      "pregunta": "¿Qué SKUs tienen en algún almacén más stock virtual que físico?",
+      "passed": false,
+      "details": {
+        "precision": 0.286,
+        "recall": 1.0,
+        "missing": [],
+        "extra": [
+          "CBL-1042",
+          "CBL-1043",
+          "CBL-2210",
+          "WRP-0012",
+          "WRP-0087"
+        ]
+      },
+      "tool_ok": true,
+      "tool_details": {
+        "expected": [
+          "list_stock_discrepancies"
+        ],
+        "called": [
+          "list_stock_discrepancies"
+        ],
+        "unknown_args": {}
+      },
+      "answer": "Los SKUs que tienen más stock virtual que físico en algún almacén son:\n\n- WRP-0087 en almacén B: 40 unidades más virtual que físico.\n- CBL-1042 en almacén A: 15 unidades más virtual que físico.\n- DCT-3310 en almacén A: 15 unidades más virtual que físico.\n- CBL-2210 en almacén A: 5 unidades más virtual que físico.\n- WRP-0012 en almacén B: 5 unidades más virtual que físico.\n- CBL-1043 en almacén A: 2 unidades más virtual que físico.\n- CBL-0099 en almacén B: 2 unidades más virtual que físico.\n- DCT-3310 en almacén B: 2 unidades más virtual que físico.",
+      "calls": [
+        {
+          "name": "list_stock_discrepancies",
+          "args": {
+            "min_diff": 1
+          },
+          "unknown_args": [],
+          "output": "{\"result\": [{\"sku\": \"WRP-0087\", \"warehouse\": \"B\", \"qty_physical\": 200, \"qty_virtual\": 160, \"diff\": 40}, {\"sku\": \"CBL-1042\", \"warehouse\": \"A\", \"qty_physical\": 340, \"qty_virtual\": 325, \"diff\": 15}, {\"sku\": \"DCT-3310\", \"warehouse\": \"A\", \"qty_physical\": 5, \"qty_virtual\": 20, \"diff\": 15}, {\"sku\": \"CBL-2210\", \"warehouse\": \"A\", \"qty_physical\": 410, \"qty_virtual\": 405, \"diff\": 5}, {\"sku\": \"WRP-0012\", \"warehouse\": \"B\", \"qty_physical\": 75, \"qty_virtual\": 70, \"diff\": 5}, {\"sku\": \"CBL-1043\", \"warehouse\": \"A\", \"qty_physical\": 120, \"qty_virtual\": 118, \"diff\": 2}, {\"sku\": \"CBL-0099\", \"warehouse\": \"B\", \"qty_physical\": 60, \"qty_virtual\": 62, \"diff\": 2}, {\"sku\": \"DCT-3310\", \"warehouse\": \"B\", \"qty_physical\": 90, \"qty_virtual\": 88, \"diff\": 2}]}"
+        }
+      ],
+      "latency_s": 63.73,
+      "tokens_in": 2089,
+      "tokens_out": 222,
+      "hit_max_steps": false,
+      "ungrounded_numbers": [],
+      "reflections": 0
+    },
+    {
+      "id": "H05",
+      "categoria": "caso_limite",
+      "metodo": "exact_match",
+      "pregunta": "¿Cuánto stock hay del cbl1042 en el almacén A?",
+      "passed": true,
+      "details": {
+        "numbers_found": [
+          1.0,
+          340.0
+        ]
+      },
+      "tool_ok": true,
+      "tool_details": {
+        "expected": [
+          "get_stock"
+        ],
+        "called": [
+          "get_stock"
+        ],
+        "unknown_args": {}
+      },
+      "answer": "En el almacén A, el SKU CBL-1042 (Cable organizer sleeve 1in black) tiene 340 unidades físicas.",
+      "calls": [
+        {
+          "name": "get_stock",
+          "args": {
+            "sku": "CBL-1042",
+            "warehouse": "A"
+          },
+          "unknown_args": [],
+          "output": "{\n  \"found\": true,\n  \"sku\": \"CBL-1042\",\n  \"description\": \"Cable organizer sleeve 1in black\",\n  \"warehouses\": [\n    {\n      \"warehouse\": \"A\",\n      \"qty_physical\": 340,\n      \"qty_virtual\": 325,\n      \"reorder_point\": 50,\n      \"price\": 12.89,\n      \"updated_at\": \"2026-10-22\",\n      \"inventory_value\": 4382.6\n    }\n  ]\n}"
+        }
+      ],
+      "latency_s": 37.16,
+      "tokens_in": 3029,
+      "tokens_out": 119,
+      "hit_max_steps": false,
+      "ungrounded_numbers": [],
+      "reflections": 1
+    },
+    {
+      "id": "H06",
+      "categoria": "fuera_de_alcance",
+      "metodo": "refusal",
+      "pregunta": "¿Cuál es el plazo de entrega habitual del proveedor de fundas trenzadas?",
+      "passed": true,
+      "details": {
+        "refused": true,
+        "leaked_skus": [],
+        "leaked_numbers": []
+      },
+      "tool_ok": true,
+      "tool_details": {
+        "expected": [],
+        "called": []
+      },
+      "answer": "Mis herramientas se centran en el inventario de los almacenes A y B, no en el plazo de entrega de los proveedores. Puedo ayudarte a verificar el stock actual de fundas trenzadas en nuestros almacenes si me proporcionas el código SKU. ¿Podrías darme ese código, por favor?",
+      "calls": [],
+      "latency_s": 16.36,
+      "tokens_in": 861,
+      "tokens_out": 73,
+      "hit_max_steps": false,
+      "ungrounded_numbers": [],
+      "reflections": 0
+    },
+    {
+      "id": "H07",
+      "categoria": "varios_pasos",
+      "metodo": "exact_match",
+      "pregunta": "¿Qué SKU tiene la mayor diferencia de precio entre almacenes y cuántas unidades físicas tiene en el almacén B?",
+      "passed": true,
+      "details": {
+        "per_key": {
+          "sku": true,
+          "stock_B": true
+        }
+      },
+      "tool_ok": true,
+      "tool_details": {
+        "expected": [
+          "list_price_discrepancies",
+          "get_stock"
+        ],
+        "called": [
+          "list_price_discrepancies",
+          "get_stock",
+          "get_stock"
+        ],
+        "unknown_args": {}
+      },
+      "answer": "El SKU HSE-0501, que tiene la mayor diferencia de precio entre los almacenes, tiene 31 unidades físicas en el almacén B.",
+      "calls": [
+        {
+          "name": "list_price_discrepancies",
+          "args": {},
+          "unknown_args": [],
+          "output": "{\"result\": [{\"sku\": \"HSE-0501\", \"price_A\": 9.1, \"price_B\": 12.5, \"diff\": 3.4}, {\"sku\": \"CBL-2210\", \"price_A\": 4.5, \"price_B\": 4.75, \"diff\": 0.25}]}"
+        },
+        {
+          "name": "get_stock",
+          "args": {
+            "sku": "",
+            "warehouse": "B"
+          },
+          "unknown_args": [],
+          "output": "{\n  \"found\": false,\n  \"sku\": \"\",\n  \"error\": \"SKU no encontrado\"\n}"
+        },
+        {
+          "name": "get_stock",
+          "args": {
+            "sku": "HSE-0501",
+            "warehouse": "B"
+          },
+          "unknown_args": [],
+          "output": "{\n  \"found\": true,\n  \"sku\": \"HSE-0501\",\n  \"description\": \"Heat shrink kit 560pcs\",\n  \"warehouses\": [\n    {\n      \"warehouse\": \"B\",\n      \"qty_physical\": 31,\n      \"qty_virtual\": 31,\n      \"reorder_point\": 15,\n      \"price\": 12.5,\n      \"updated_at\": \"2026-10-22\",\n      \"inventory_value\": 387.5\n    }\n  ]\n}"
+        }
+      ],
+      "latency_s": 61.98,
+      "tokens_in": 4376,
+      "tokens_out": 198,
+      "hit_max_steps": false,
+      "ungrounded_numbers": [],
+      "reflections": 1
+    },
+    {
+      "id": "H08",
+      "categoria": "abierta",
+      "metodo": "llm_judge",
+      "pregunta": "¿Qué discrepancias de stock debería revisar primero el equipo de almacén y por qué?",
+      "passed": true,
+      "details": {
+        "criterios": [
+          true,
+          true,
+          true
+        ],
+        "razon": "La respuesta utiliza datos reales, prioriza las discrepancias más grandes y es concisa.",
+        "reference_recall": 1.0,
+        "judge_reused": true
+      },
+      "tool_ok": true,
+      "tool_details": {
+        "expected": [
+          "list_stock_discrepancies"
+        ],
+        "called": [
+          "list_stock_discrepancies",
+          "list_stock_discrepancies"
+        ],
+        "unknown_args": {}
+      },
+      "answer": "Las discrepancias de stock que el equipo de almacén debería revisar primero son:\n\n- SKU: CBL-1042, Almacén A: La discrepancia es de 15 unidades.\n- SKU: DCT-3310, Almacén A: La discrepancia es de 15 unidades.\n- SKU: WRP-0087, Almacén B: La discrepancia es de 40 unidades.\n\nEstas son las mayores discrepancias encontradas, lo que sugiere que podrían haber errores en la gestión del stock en estos SKUs.",
+      "calls": [
+        {
+          "name": "list_stock_discrepancies",
+          "args": {
+            "min_diff": 10,
+            "warehouse": "A"
+          },
+          "unknown_args": [],
+          "output": "{\"result\": [{\"sku\": \"CBL-1042\", \"warehouse\": \"A\", \"qty_physical\": 340, \"qty_virtual\": 325, \"diff\": 15}, {\"sku\": \"DCT-3310\", \"warehouse\": \"A\", \"qty_physical\": 5, \"qty_virtual\": 20, \"diff\": 15}]}"
+        },
+        {
+          "name": "list_stock_discrepancies",
+          "args": {
+            "min_diff": 10,
+            "warehouse": "B"
+          },
+          "unknown_args": [],
+          "output": "{\"result\": [{\"sku\": \"WRP-0087\", \"warehouse\": \"B\", \"qty_physical\": 200, \"qty_virtual\": 160, \"diff\": 40}]}"
+        }
+      ],
+      "latency_s": 53.73,
+      "tokens_in": 1942,
+      "tokens_out": 192,
+      "hit_max_steps": false,
+      "ungrounded_numbers": [],
+      "reflections": 0
+    }
+  ],
+  "regraded_from": "run_20261117-131236_qwen2.5-7b.json"
+}

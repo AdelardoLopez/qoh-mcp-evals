@@ -1,0 +1,731 @@
+{
+  "model": "qwen2.5:7b",
+  "judge_model": "qwen2.5:7b",
+  "system_prompt_version": "v3",
+  "eval_file": "eval_set_qoh.yaml",
+  "ollama_options": {
+    "temperature": 0,
+    "num_ctx": 8192
+  },
+  "ground_check": true,
+  "grader_version": "g4",
+  "summary": {
+    "n": 17,
+    "n_completed": 17,
+    "pass_rate": 1.0,
+    "tool_accuracy": 0.941,
+    "avg_latency_s": 32.24,
+    "avg_tool_calls": 0.94,
+    "total_tokens": 38774,
+    "max_tokens_in": 4535,
+    "grounded_rate": 0.941,
+    "ungrounded": [
+      "Q07"
+    ],
+    "by_categoria": {
+      "consulta_directa": {
+        "n": 5,
+        "pass_rate": 1.0
+      },
+      "agregacion": {
+        "n": 3,
+        "pass_rate": 1.0
+      },
+      "comparacion": {
+        "n": 2,
+        "pass_rate": 1.0
+      },
+      "caso_limite": {
+        "n": 3,
+        "pass_rate": 1.0
+      },
+      "abierta": {
+        "n": 1,
+        "pass_rate": 1.0
+      },
+      "fuera_de_alcance": {
+        "n": 1,
+        "pass_rate": 1.0
+      },
+      "varios_pasos": {
+        "n": 2,
+        "pass_rate": 1.0
+      }
+    },
+    "failed": [],
+    "infra_errors": []
+  },
+  "results": [
+    {
+      "id": "Q01",
+      "categoria": "consulta_directa",
+      "metodo": "exact_match",
+      "pregunta": "¿Cuántas unidades hay del SKU CBL-1042 en el almacén A?",
+      "passed": true,
+      "details": {
+        "numbers_found": [
+          1.0,
+          340.0
+        ]
+      },
+      "tool_ok": true,
+      "tool_details": {
+        "expected": [
+          "get_stock"
+        ],
+        "called": [
+          "get_stock"
+        ],
+        "unknown_args": {}
+      },
+      "answer": "En el almacén A, el SKU CBL-1042 (Cable organizer sleeve 1in black) tiene 340 unidades físicas en stock.",
+      "calls": [
+        {
+          "name": "get_stock",
+          "args": {
+            "sku": "CBL-1042",
+            "warehouse": "A"
+          },
+          "unknown_args": [],
+          "output": "{\n  \"found\": true,\n  \"sku\": \"CBL-1042\",\n  \"description\": \"Cable organizer sleeve 1in black\",\n  \"warehouses\": [\n    {\n      \"warehouse\": \"A\",\n      \"qty_physical\": 340,\n      \"qty_virtual\": 325,\n      \"reorder_point\": 50,\n      \"price\": 12.89,\n      \"updated_at\": \"2026-10-22\",\n      \"inventory_value\": 4382.6\n    }\n  ]\n}"
+        }
+      ],
+      "latency_s": 23.91,
+      "tokens_in": 1897,
+      "tokens_out": 70,
+      "hit_max_steps": false,
+      "ungrounded_numbers": [],
+      "reflections": 0
+    },
+    {
+      "id": "Q02",
+      "categoria": "consulta_directa",
+      "metodo": "exact_match",
+      "pregunta": "¿Cuántas unidades hay del SKU CBL-1043 en el almacén B?",
+      "passed": true,
+      "details": {
+        "numbers_found": [
+          85.0
+        ]
+      },
+      "tool_ok": true,
+      "tool_details": {
+        "expected": [
+          "get_stock"
+        ],
+        "called": [
+          "get_stock"
+        ],
+        "unknown_args": {}
+      },
+      "answer": "En el almacén B, hay 85 unidades del SKU CBL-1043.",
+      "calls": [
+        {
+          "name": "get_stock",
+          "args": {
+            "sku": "CBL-1043",
+            "warehouse": "B"
+          },
+          "unknown_args": [],
+          "output": "{\n  \"found\": true,\n  \"sku\": \"CBL-1043\",\n  \"description\": \"Cable organizer sleeve 2in black\",\n  \"warehouses\": [\n    {\n      \"warehouse\": \"B\",\n      \"qty_physical\": 85,\n      \"qty_virtual\": 85,\n      \"reorder_point\": 40,\n      \"price\": 15.49,\n      \"updated_at\": \"2026-10-22\",\n      \"inventory_value\": 1316.65\n    }\n  ]\n}"
+        }
+      ],
+      "latency_s": 20.32,
+      "tokens_in": 1896,
+      "tokens_out": 55,
+      "hit_max_steps": false,
+      "ungrounded_numbers": [],
+      "reflections": 0
+    },
+    {
+      "id": "Q03",
+      "categoria": "consulta_directa",
+      "metodo": "numeric_tolerance",
+      "pregunta": "¿Precio del SKU CBL-1042 en el almacén A?",
+      "passed": true,
+      "details": {
+        "numbers_found": [
+          12.89,
+          1289.0
+        ]
+      },
+      "tool_ok": true,
+      "tool_details": {
+        "expected": [
+          "get_stock"
+        ],
+        "called": [
+          "get_stock"
+        ],
+        "unknown_args": {}
+      },
+      "answer": "El precio del SKU CBL-1042 en el almacén A es de $12.89.",
+      "calls": [
+        {
+          "name": "get_stock",
+          "args": {
+            "sku": "CBL-1042",
+            "warehouse": "A"
+          },
+          "unknown_args": [],
+          "output": "{\n  \"found\": true,\n  \"sku\": \"CBL-1042\",\n  \"description\": \"Cable organizer sleeve 1in black\",\n  \"warehouses\": [\n    {\n      \"warehouse\": \"A\",\n      \"qty_physical\": 340,\n      \"qty_virtual\": 325,\n      \"reorder_point\": 50,\n      \"price\": 12.89,\n      \"updated_at\": \"2026-10-22\",\n      \"inventory_value\": 4382.6\n    }\n  ]\n}"
+        }
+      ],
+      "latency_s": 21.39,
+      "tokens_in": 1889,
+      "tokens_out": 59,
+      "hit_max_steps": false,
+      "ungrounded_numbers": [],
+      "reflections": 0
+    },
+    {
+      "id": "Q04",
+      "categoria": "consulta_directa",
+      "metodo": "boolean",
+      "pregunta": "¿Esta el SKU CBL-1042 en el almacén A?",
+      "passed": true,
+      "details": {
+        "got": true
+      },
+      "tool_ok": true,
+      "tool_details": {
+        "expected": [
+          "get_stock"
+        ],
+        "called": [
+          "get_stock",
+          "get_stock"
+        ],
+        "unknown_args": {}
+      },
+      "answer": "El SKU CBL-1042 \"Cable organizer sleeve 1in black\" está en el almacén A con 340 unidades físicas y 325 virtuales. El punto de reposición es de 50 unidades, por lo que se recomendaría reponer. La última actualización fue el 22 de octubre de 2026. El valor de inventario no se ha calculado en esta respuesta, pero puedes solicitarlo si es necesario.",
+      "calls": [
+        {
+          "name": "get_stock",
+          "args": {
+            "sku": "CBL-1042",
+            "warehouse": "A"
+          },
+          "unknown_args": [],
+          "output": "{\n  \"found\": true,\n  \"sku\": \"CBL-1042\",\n  \"description\": \"Cable organizer sleeve 1in black\",\n  \"warehouses\": [\n    {\n      \"warehouse\": \"A\",\n      \"qty_physical\": 340,\n      \"qty_virtual\": 325,\n      \"reorder_point\": 50,\n      \"price\": 12.89,\n      \"updated_at\": \"2026-10-22\",\n      \"inventory_value\": 4382.6\n    }\n  ]\n}"
+        },
+        {
+          "name": "get_stock",
+          "args": {
+            "sku": "CBL-1042",
+            "warehouse": "A"
+          },
+          "unknown_args": [],
+          "output": "{\n  \"found\": true,\n  \"sku\": \"CBL-1042\",\n  \"description\": \"Cable organizer sleeve 1in black\",\n  \"warehouses\": [\n    {\n      \"warehouse\": \"A\",\n      \"qty_physical\": 340,\n      \"qty_virtual\": 325,\n      \"reorder_point\": 50,\n      \"price\": 12.89,\n      \"updated_at\": \"2026-10-22\",\n      \"inventory_value\": 4382.6\n    }\n  ]\n}"
+        }
+      ],
+      "latency_s": 79.95,
+      "tokens_in": 4418,
+      "tokens_out": 287,
+      "hit_max_steps": false,
+      "ungrounded_numbers": [],
+      "reflections": 1
+    },
+    {
+      "id": "Q05",
+      "categoria": "consulta_directa",
+      "metodo": "exact_match",
+      "pregunta": "¿Cuándo se actualizó el SKU CBL-1042 en el almacén A?",
+      "passed": true,
+      "details": {
+        "numbers_found": [
+          2026.0,
+          10.0,
+          22.0
+        ]
+      },
+      "tool_ok": true,
+      "tool_details": {
+        "expected": [
+          "get_stock"
+        ],
+        "called": [
+          "get_stock"
+        ],
+        "unknown_args": {}
+      },
+      "answer": "El SKU CBL-1042 se actualizó el 2026-10-22 en el almacén A.",
+      "calls": [
+        {
+          "name": "get_stock",
+          "args": {
+            "sku": "CBL-1042",
+            "warehouse": "A"
+          },
+          "unknown_args": [],
+          "output": "{\n  \"found\": true,\n  \"sku\": \"CBL-1042\",\n  \"description\": \"Cable organizer sleeve 1in black\",\n  \"warehouses\": [\n    {\n      \"warehouse\": \"A\",\n      \"qty_physical\": 340,\n      \"qty_virtual\": 325,\n      \"reorder_point\": 50,\n      \"price\": 12.89,\n      \"updated_at\": \"2026-10-22\",\n      \"inventory_value\": 4382.6\n    }\n  ]\n}"
+        }
+      ],
+      "latency_s": 22.63,
+      "tokens_in": 1901,
+      "tokens_out": 65,
+      "hit_max_steps": false,
+      "ungrounded_numbers": [],
+      "reflections": 0
+    },
+    {
+      "id": "Q06",
+      "categoria": "agregacion",
+      "metodo": "exact_match",
+      "pregunta": "¿Cuál es el stock total del SKU CBL-1042 sumando ambos almacenes?",
+      "passed": true,
+      "details": {
+        "numbers_found": [
+          512.0
+        ]
+      },
+      "tool_ok": true,
+      "tool_details": {
+        "expected": [
+          "get_stock"
+        ],
+        "called": [
+          "get_stock"
+        ],
+        "unknown_args": {}
+      },
+      "answer": "Lo siento por el error anterior. Vamos a utilizar solo los datos proporcionados por las herramientas.\n\nEl stock total del SKU CBL-1042 sumando ambos almacenes es de 512 unidades físicas.",
+      "calls": [
+        {
+          "name": "get_stock",
+          "args": {
+            "sku": "CBL-1042",
+            "warehouse": null
+          },
+          "unknown_args": [],
+          "output": "{\n  \"found\": true,\n  \"sku\": \"CBL-1042\",\n  \"description\": \"Cable organizer sleeve 1in black\",\n  \"warehouses\": [\n    {\n      \"warehouse\": \"A\",\n      \"qty_physical\": 340,\n      \"qty_virtual\": 325,\n      \"reorder_point\": 50,\n      \"price\": 12.89,\n      \"updated_at\": \"2026-10-22\",\n      \"inventory_value\": 4382.6\n    },\n    {\n      \"warehouse\": \"B\",\n      \"qty_physical\": 172,\n      \"qty_virtual\": 172,\n      \"reorder_point\": 50,\n      \"price\": 12.89,\n      \"updated_at\": \"2026-10-22\",\n      \"inventory_value\": 2217.08\n    }\n  ],\n  \"total\": {\n    \"qty_physical\": 512,\n    \"inventory_value\": 6599.68\n  }\n}"
+        }
+      ],
+      "latency_s": 43.53,
+      "tokens_in": 3261,
+      "tokens_out": 127,
+      "hit_max_steps": false,
+      "ungrounded_numbers": [],
+      "reflections": 1
+    },
+    {
+      "id": "Q07",
+      "categoria": "agregacion",
+      "metodo": "numeric_tolerance",
+      "pregunta": "¿Cuál es el valor total del inventario del SKU CBL-1042 en ambos almacenes?",
+      "passed": true,
+      "details": {
+        "numbers_found": [
+          6599.68,
+          6.59968,
+          22.0,
+          2026.0
+        ]
+      },
+      "tool_ok": true,
+      "tool_details": {
+        "expected": [
+          "get_stock"
+        ],
+        "called": [
+          "get_stock"
+        ],
+        "unknown_args": {}
+      },
+      "answer": "Lo siento por la confusión anterior. Vamos a utilizar los datos proporcionados por las herramientas.\n\nEl valor total del inventario del SKU CBL-1042 en ambos almacenes es de $6,599.68, según la información actualizada del 22 de octubre de 2026.",
+      "calls": [
+        {
+          "name": "get_stock",
+          "args": {
+            "warehouse": null,
+            "sku": "CBL-1042"
+          },
+          "unknown_args": [],
+          "output": "{\n  \"found\": true,\n  \"sku\": \"CBL-1042\",\n  \"description\": \"Cable organizer sleeve 1in black\",\n  \"warehouses\": [\n    {\n      \"warehouse\": \"A\",\n      \"qty_physical\": 340,\n      \"qty_virtual\": 325,\n      \"reorder_point\": 50,\n      \"price\": 12.89,\n      \"updated_at\": \"2026-10-22\",\n      \"inventory_value\": 4382.6\n    },\n    {\n      \"warehouse\": \"B\",\n      \"qty_physical\": 172,\n      \"qty_virtual\": 172,\n      \"reorder_point\": 50,\n      \"price\": 12.89,\n      \"updated_at\": \"2026-10-22\",\n      \"inventory_value\": 2217.08\n    }\n  ],\n  \"total\": {\n    \"qty_physical\": 512,\n    \"inventory_value\": 6599.68\n  }\n}"
+        }
+      ],
+      "latency_s": 45.86,
+      "tokens_in": 3255,
+      "tokens_out": 139,
+      "hit_max_steps": false,
+      "ungrounded_numbers": [
+        6.59968
+      ],
+      "reflections": 1
+    },
+    {
+      "id": "Q08",
+      "categoria": "agregacion",
+      "metodo": "exact_match",
+      "pregunta": "¿Qué almacén tiene más unidades del SKU CBL-1043?",
+      "passed": true,
+      "details": {
+        "numbers_found": [
+          120.0,
+          85.0
+        ]
+      },
+      "tool_ok": true,
+      "tool_details": {
+        "expected": [
+          "get_stock"
+        ],
+        "called": [
+          "get_stock"
+        ],
+        "unknown_args": {}
+      },
+      "answer": "El almacén A tiene más unidades del SKU CBL-1043 con 120 unidades físicas, mientras que el almacén B tiene 85 unidades.",
+      "calls": [
+        {
+          "name": "get_stock",
+          "args": {
+            "sku": "CBL-1043",
+            "warehouse": null
+          },
+          "unknown_args": [],
+          "output": "{\n  \"found\": true,\n  \"sku\": \"CBL-1043\",\n  \"description\": \"Cable organizer sleeve 2in black\",\n  \"warehouses\": [\n    {\n      \"warehouse\": \"A\",\n      \"qty_physical\": 120,\n      \"qty_virtual\": 118,\n      \"reorder_point\": 40,\n      \"price\": 15.49,\n      \"updated_at\": \"2026-10-22\",\n      \"inventory_value\": 1858.8\n    },\n    {\n      \"warehouse\": \"B\",\n      \"qty_physical\": 85,\n      \"qty_virtual\": 85,\n      \"reorder_point\": 40,\n      \"price\": 15.49,\n      \"updated_at\": \"2026-10-22\",\n      \"inventory_value\": 1316.65\n    }\n  ],\n  \"total\": {\n    \"qty_physical\": 205,\n    \"inventory_value\": 3175.45\n  }\n}"
+        }
+      ],
+      "latency_s": 28.58,
+      "tokens_in": 2001,
+      "tokens_out": 71,
+      "hit_max_steps": false,
+      "ungrounded_numbers": [],
+      "reflections": 0
+    },
+    {
+      "id": "Q09",
+      "categoria": "comparacion",
+      "metodo": "precision_recall",
+      "pregunta": "¿Qué SKUs tienen una diferencia entre stock físico y stock virtual mayor de 10 unidades?",
+      "passed": true,
+      "details": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "missing": [],
+        "extra": []
+      },
+      "tool_ok": true,
+      "tool_details": {
+        "expected": [
+          "list_stock_discrepancies"
+        ],
+        "called": [
+          "list_stock_discrepancies"
+        ],
+        "unknown_args": {}
+      },
+      "answer": "Los SKUs con una diferencia mayor de 10 unidades entre stock físico y virtual son:\n\n- WRP-0087 en almacén B: 40 unidades de diferencia.\n- CBL-1042 en almacén A: 15 unidades de diferencia.\n- DCT-3310 en almacén A: 15 unidades de diferencia.",
+      "calls": [
+        {
+          "name": "list_stock_discrepancies",
+          "args": {
+            "min_diff": 10
+          },
+          "unknown_args": [],
+          "output": "{\"result\": [{\"sku\": \"WRP-0087\", \"warehouse\": \"B\", \"qty_physical\": 200, \"qty_virtual\": 160, \"diff\": 40}, {\"sku\": \"CBL-1042\", \"warehouse\": \"A\", \"qty_physical\": 340, \"qty_virtual\": 325, \"diff\": 15}, {\"sku\": \"DCT-3310\", \"warehouse\": \"A\", \"qty_physical\": 5, \"qty_virtual\": 20, \"diff\": 15}]}"
+        }
+      ],
+      "latency_s": 31.87,
+      "tokens_in": 1894,
+      "tokens_out": 109,
+      "hit_max_steps": false,
+      "ungrounded_numbers": [],
+      "reflections": 0
+    },
+    {
+      "id": "Q10",
+      "categoria": "comparacion",
+      "metodo": "precision_recall",
+      "pregunta": "¿Qué SKUs tienen un precio distinto entre el almacén A y el B?",
+      "passed": true,
+      "details": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "missing": [],
+        "extra": []
+      },
+      "tool_ok": true,
+      "tool_details": {
+        "expected": [
+          "list_price_discrepancies"
+        ],
+        "called": [
+          "list_price_discrepancies"
+        ],
+        "unknown_args": {}
+      },
+      "answer": "Los SKUs con precios diferentes entre los almacenes A y B son:\n\n- HSE-0501: Precio en A $9.1, en B $12.5, diferencia de $3.4\n- CBL-2210: Precio en A $4.5, en B $4.75, diferencia de $0.25",
+      "calls": [
+        {
+          "name": "list_price_discrepancies",
+          "args": {},
+          "unknown_args": [],
+          "output": "{\"result\": [{\"sku\": \"HSE-0501\", \"price_A\": 9.1, \"price_B\": 12.5, \"diff\": 3.4}, {\"sku\": \"CBL-2210\", \"price_A\": 4.5, \"price_B\": 4.75, \"diff\": 0.25}]}"
+        }
+      ],
+      "latency_s": 27.74,
+      "tokens_in": 1840,
+      "tokens_out": 103,
+      "hit_max_steps": false,
+      "ungrounded_numbers": [],
+      "reflections": 0
+    },
+    {
+      "id": "Q11",
+      "categoria": "caso_limite",
+      "metodo": "refusal",
+      "pregunta": "¿Cuánto stock hay del SKU XYZ-9999?",
+      "passed": true,
+      "details": {
+        "refused": true,
+        "leaked_skus": [],
+        "leaked_numbers": []
+      },
+      "tool_ok": true,
+      "tool_details": {
+        "expected": [
+          "get_stock"
+        ],
+        "called": [
+          "get_stock"
+        ],
+        "unknown_args": {}
+      },
+      "answer": "El SKU XYZ-9999 no existe en nuestros registros.",
+      "calls": [
+        {
+          "name": "get_stock",
+          "args": {
+            "sku": "XYZ-9999",
+            "warehouse": null
+          },
+          "unknown_args": [],
+          "output": "{\n  \"found\": false,\n  \"sku\": \"XYZ-9999\",\n  \"error\": \"SKU no encontrado\"\n}"
+        }
+      ],
+      "latency_s": 13.84,
+      "tokens_in": 1786,
+      "tokens_out": 45,
+      "hit_max_steps": false,
+      "ungrounded_numbers": [],
+      "reflections": 0
+    },
+    {
+      "id": "Q12",
+      "categoria": "caso_limite",
+      "metodo": "refusal",
+      "pregunta": "¿Qué SKU tiene un precio de 999999999?",
+      "passed": true,
+      "details": {
+        "refused": true,
+        "leaked_skus": [],
+        "leaked_numbers": []
+      },
+      "tool_ok": true,
+      "tool_details": {
+        "expected": [],
+        "called": []
+      },
+      "answer": "Mis herramientas no proporcionan información sobre los precios individuales de los SKUs. Puedo verificar el stock y las discrepancias de stock, pero no los precios específicos. ¿Podrías proporcionarme un código SKU para que pueda realizar una consulta?",
+      "calls": [],
+      "latency_s": 12.69,
+      "tokens_in": 859,
+      "tokens_out": 55,
+      "hit_max_steps": false,
+      "ungrounded_numbers": [],
+      "reflections": 0
+    },
+    {
+      "id": "Q13",
+      "categoria": "caso_limite",
+      "metodo": "clarification",
+      "pregunta": "¿Cuánto hay del cable negro?",
+      "passed": true,
+      "details": {
+        "asks_back": true,
+        "gives_quantity": false
+      },
+      "tool_ok": true,
+      "tool_details": {
+        "expected": [],
+        "called": []
+      },
+      "answer": "Para consultar el stock del cable negro, necesito saber su código SKU. ¿Podría proporcionarme el código SKU, por favor?",
+      "calls": [],
+      "latency_s": 6.56,
+      "tokens_in": 850,
+      "tokens_out": 28,
+      "hit_max_steps": false,
+      "ungrounded_numbers": [],
+      "reflections": 0
+    },
+    {
+      "id": "Q14",
+      "categoria": "abierta",
+      "metodo": "llm_judge",
+      "pregunta": "¿Qué productos debería reponer primero esta semana?",
+      "passed": true,
+      "details": {
+        "criterios": [
+          true,
+          true,
+          true
+        ],
+        "razon": "La respuesta utiliza datos reales, prioriza correctamente los SKUs de referencia y es concisa sin relleno.",
+        "reference_recall": 1.0
+      },
+      "tool_ok": true,
+      "tool_details": {
+        "expected": [
+          "list_low_stock"
+        ],
+        "called": [
+          "list_low_stock"
+        ],
+        "unknown_args": {}
+      },
+      "answer": "Los productos que deberías reponer primero esta semana son:\n\n- **CBL-0099** en almacén A: 2 unidades físicas, punto de reposición de 30, ratio 0.067.\n- **DCT-3310** en almacén A: 5 unidades físicas, punto de reposición de 50, ratio 0.1.\n- **WRP-0012** en almacén A: 8 unidades físicas, punto de reposición de 40, ratio 0.2.\n\nAdemás, en almacén B:\n\n- **DCT-3310**: 90 unidades físicas, punto de reposición de 50, ratio 1.8.\n- **WRP-0012**: 75 unidades físicas, punto de reposición de 40, ratio 1.875.\n\nEstos productos están por debajo de su punto de reposición y necesitan ser reabastecidos urgentemente.",
+      "calls": [
+        {
+          "name": "list_low_stock",
+          "args": {
+            "limit": 5
+          },
+          "unknown_args": [],
+          "output": "{\"result\": [{\"sku\": \"CBL-0099\", \"warehouse\": \"A\", \"qty_physical\": 2, \"reorder_point\": 30, \"ratio\": 0.067}, {\"sku\": \"DCT-3310\", \"warehouse\": \"A\", \"qty_physical\": 5, \"reorder_point\": 50, \"ratio\": 0.1}, {\"sku\": \"WRP-0012\", \"warehouse\": \"A\", \"qty_physical\": 8, \"reorder_point\": 40, \"ratio\": 0.2}, {\"sku\": \"DCT-3310\", \"warehouse\": \"B\", \"qty_physical\": 90, \"reorder_point\": 50, \"ratio\": 1.8}, {\"sku\": \"WRP-0012\", \"warehouse\": \"B\", \"qty_physical\": 75, \"reorder_point\": 40, \"ratio\": 1.875}]}"
+        }
+      ],
+      "latency_s": 63.04,
+      "tokens_in": 1961,
+      "tokens_out": 248,
+      "hit_max_steps": false,
+      "ungrounded_numbers": [],
+      "reflections": 0
+    },
+    {
+      "id": "Q15",
+      "categoria": "fuera_de_alcance",
+      "metodo": "refusal",
+      "pregunta": "¿Qué productos son los que más beneficio reportan?",
+      "passed": true,
+      "details": {
+        "refused": true,
+        "leaked_skus": [],
+        "leaked_numbers": []
+      },
+      "tool_ok": true,
+      "tool_details": {
+        "expected": [],
+        "called": []
+      },
+      "answer": "Mis herramientas no proporcionan información sobre ventas o beneficios. Puedo ayudarte a verificar el stock físico y virtual de los productos si lo necesitas. ¿Podrías indicarme un SKU específico o prefieres que liste los productos con stock bajo?",
+      "calls": [],
+      "latency_s": 11.83,
+      "tokens_in": 853,
+      "tokens_out": 54,
+      "hit_max_steps": false,
+      "ungrounded_numbers": [],
+      "reflections": 0
+    },
+    {
+      "id": "Q16",
+      "categoria": "varios_pasos",
+      "metodo": "exact_match",
+      "pregunta": "¿Qué SKU del almacén B tiene la mayor discrepancia entre stock físico y virtual, y cuánto stock tiene ese SKU en el almacén A?",
+      "passed": true,
+      "details": {
+        "per_key": {
+          "sku": true,
+          "stock_A": true
+        }
+      },
+      "tool_ok": true,
+      "tool_details": {
+        "expected": [
+          "list_stock_discrepancies",
+          "get_stock"
+        ],
+        "called": [
+          "list_stock_discrepancies",
+          "get_stock"
+        ],
+        "unknown_args": {}
+      },
+      "answer": "El SKU WRP-0087 con la mayor discrepancia en el almacén B tiene una diferencia de 40 unidades entre el stock físico y virtual.\n\nEn el almacén A, este SKU tiene 58 unidades físicas.",
+      "calls": [
+        {
+          "name": "list_stock_discrepancies",
+          "args": {
+            "min_diff": 1,
+            "warehouse": "B"
+          },
+          "unknown_args": [],
+          "output": "{\"result\": [{\"sku\": \"WRP-0087\", \"warehouse\": \"B\", \"qty_physical\": 200, \"qty_virtual\": 160, \"diff\": 40}, {\"sku\": \"WRP-0012\", \"warehouse\": \"B\", \"qty_physical\": 75, \"qty_virtual\": 70, \"diff\": 5}, {\"sku\": \"CBL-0099\", \"warehouse\": \"B\", \"qty_physical\": 60, \"qty_virtual\": 62, \"diff\": 2}, {\"sku\": \"DCT-3310\", \"warehouse\": \"B\", \"qty_physical\": 90, \"qty_virtual\": 88, \"diff\": 2}]}"
+        },
+        {
+          "name": "get_stock",
+          "args": {
+            "sku": "WRP-0087",
+            "warehouse": "A"
+          },
+          "unknown_args": [],
+          "output": "{\n  \"found\": true,\n  \"sku\": \"WRP-0087\",\n  \"description\": \"Braided wrap 3/4in\",\n  \"warehouses\": [\n    {\n      \"warehouse\": \"A\",\n      \"qty_physical\": 58,\n      \"qty_virtual\": 58,\n      \"reorder_point\": 20,\n      \"price\": 7.99,\n      \"updated_at\": \"2026-10-20\",\n      \"inventory_value\": 463.42\n    }\n  ]\n}"
+        }
+      ],
+      "latency_s": 68.68,
+      "tokens_in": 4535,
+      "tokens_out": 218,
+      "hit_max_steps": false,
+      "ungrounded_numbers": [],
+      "reflections": 1
+    },
+    {
+      "id": "Q17",
+      "categoria": "varios_pasos",
+      "metodo": "numeric_tolerance",
+      "pregunta": "¿Qué SKU del almacén B tiene la mayor diferencia de precio con el mismo SKU del almacén A?",
+      "passed": true,
+      "details": {
+        "per_key": {
+          "sku": true,
+          "diferencia": true
+        }
+      },
+      "tool_ok": false,
+      "tool_details": {
+        "expected": [
+          "list_price_discrepancies"
+        ],
+        "called": [
+          "list_price_discrepancies"
+        ],
+        "unknown_args": {
+          "list_price_discrepancies": [
+            "warehouse"
+          ]
+        }
+      },
+      "answer": "El SKU que tiene la mayor diferencia de precio entre el almacén A y B es HSE-0501. El precio en el almacén A es de 9.1 y en el almacén B es de 12.5, con una diferencia de 3.4 unidades de precio.",
+      "calls": [
+        {
+          "name": "list_price_discrepancies",
+          "args": {
+            "warehouse": "B"
+          },
+          "unknown_args": [
+            "warehouse"
+          ],
+          "output": "{\"result\": [{\"sku\": \"HSE-0501\", \"price_A\": 9.1, \"price_B\": 12.5, \"diff\": 3.4}, {\"sku\": \"CBL-2210\", \"price_A\": 4.5, \"price_B\": 4.75, \"diff\": 0.25}]}"
+        }
+      ],
+      "latency_s": 25.6,
+      "tokens_in": 1853,
+      "tokens_out": 92,
+      "hit_max_steps": false,
+      "ungrounded_numbers": [],
+      "reflections": 0
+    }
+  ]
+}

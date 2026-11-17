@@ -12,7 +12,7 @@ import unicodedata
 
 # Sube la versión con cada cambio de criterio. Para comparar ejecuciones
 # puntuadas con versiones distintas, repuntúa la antigua con regrade.py.
-GRADER_VERSION = "g4"
+GRADER_VERSION = "g5"
 
 SKU_RE = re.compile(r"\b[A-Z]{3}-\d{4}\b")
 NUM_RE = re.compile(r"\d[\d.,]*\d|\d")
@@ -46,22 +46,30 @@ def extract_skus(text: str) -> set[str]:
     return set(SKU_RE.findall(text.upper()))
 
 
-def extract_numbers(text: str) -> list[float]:
-    """Extrae números aceptando formato inglés (6,599.68) y español (6.599,68).
+def extract_number_groups(text: str) -> list[list[float]]:
+    """Una lista de interpretaciones por cada número del texto: "9.10" puede ser 9,1
+    (inglés) o 910 (español, punto de miles). La primera es la inglesa.
     Los dígitos de los SKUs se eliminan antes para que CBL-1042 no cuente como 1042."""
     text = SKU_RE.sub(" ", text.upper())
-    nums: list[float] = []
+    groups: list[list[float]] = []
     for tok in NUM_RE.findall(text):
-        candidates = {
-            tok.replace(",", ""),                     # inglés
-            tok.replace(".", "").replace(",", "."),   # español
-        }
-        for c in candidates:
+        cands: list[float] = []
+        for c in (tok.replace(",", ""),                     # inglés
+                  tok.replace(".", "").replace(",", ".")):  # español
             try:
-                nums.append(float(c))
+                v = float(c)
             except ValueError:
-                pass
-    return nums
+                continue
+            if v not in cands:
+                cands.append(v)
+        if cands:
+            groups.append(cands)
+    return groups
+
+
+def extract_numbers(text: str) -> list[float]:
+    """Todas las interpretaciones de todos los números (para buscar un valor esperado)."""
+    return [v for g in extract_number_groups(text) for v in g]
 
 
 def stray_numbers(answer: str, question: str) -> list[float]:
@@ -138,8 +146,13 @@ REFUSAL_PATTERN = re.compile(
 
 
 def is_refusal(answer: str) -> bool:
+    """Reconoce un rechazo por frases, por el patrón negación + objeto, o por cualquier
+    negación explícita ("se centran en el inventario, no en el plazo de entrega").
+    Las listas cerradas fallaron 4 veces; lo que de verdad protege es que grade_refusal
+    exige además que no se filtren SKUs ni cifras inventadas."""
     a = normalize(answer)
-    return any(k in a for k in REFUSAL_KEYWORDS) or REFUSAL_PATTERN.search(a) is not None
+    return (any(k in a for k in REFUSAL_KEYWORDS) or REFUSAL_PATTERN.search(a) is not None
+            or re.search(r"\bno\b", a) is not None)
 
 
 def grade_refusal(answer: str, question: str):
@@ -161,7 +174,9 @@ def ungrounded_numbers(answer: str, question: str, tool_outputs: list[str]) -> l
     known = set(extract_numbers(question))
     for out in tool_outputs:
         known.update(extract_numbers(out))
-    return sorted({n for n in extract_numbers(answer) if n not in known})
+    # Un número está respaldado si ALGUNA de sus interpretaciones aparece en los datos:
+    # "$9.10" no debe marcarse como 910 inventado (falso positivo detectado en el held-out).
+    return sorted({g[0] for g in extract_number_groups(answer) if not set(g) & known})
 
 
 def grade_clarification(answer: str):

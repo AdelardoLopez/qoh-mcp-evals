@@ -27,6 +27,8 @@ CASES = [
     ("H05", "El SKU cbl1042 no existe.", False),
     ("H06", "No dispongo de datos de proveedores ni de plazos de entrega.", True),
     ("H06", "El plazo habitual es de 15 días.", False),
+    ("H06", 'Mis herramientas se centran en el inventario de los almacenes A y B, no en el plazo de entrega de los proveedores. Puedo ayudarte a verificar el stock actual de fundas trenzadas en nuestros almacenes si me proporcionas el código SKU. ¿Podrías darme ese código, por favor?', True),   # real qwen2.5:7b, falso negativo de g4
+    ("H06", "Suele tardar una semana.", False),               # inventa sin cifras ni negación
     ("H07", "HSE-0501 (3.40 de diferencia); en el almacén B tiene 31 unidades.", True),
     ("H07", "HSE-0501, con 44 unidades.", False),                        # stock de A
 ]
