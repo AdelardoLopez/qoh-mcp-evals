@@ -1,0 +1,72 @@
+# Held-out set v1 - MCP QoH
+# REGLA: este set NO se usa para afinar prompts, tools ni graders. Se ejecuta una vez con la
+# configuración congelada (qwen2.5:7b, prompt v3, num_ctx 8192, ground-check) y su resultado
+# es la cifra que se publica. Si después se cambia el sistema mirando estos fallos, el set
+# deja de ser held-out y hay que escribir uno nuevo.
+# Respuestas calculadas del snapshot data/qoh_snapshot_2026-10-22.csv.
+
+- id: H01
+  categoria: consulta_directa
+  pregunta: "¿Cuántas unidades físicas hay del SKU WRP-0012 en el almacén B?"
+  tool_esperada: get_stock(sku="WRP-0012", warehouse="B")
+  respuesta_esperada: 75
+  metodo: exact_match
+
+- id: H02
+  categoria: consulta_directa
+  pregunta: "¿Qué precio tiene el SKU HSE-0501 en el almacén A?"
+  tool_esperada: get_stock(sku="HSE-0501", warehouse="A")
+  respuesta_esperada: 9.10
+  metodo: numeric_tolerance
+  tolerancia: 0.01
+
+- id: H03
+  categoria: agregacion
+  pregunta: "¿Cuántas unidades físicas suma el SKU DCT-3310 entre los dos almacenes?"
+  tool_esperada: get_stock(sku="DCT-3310")
+  respuesta_esperada: 95           # 5 (A) + 90 (B)
+  metodo: exact_match
+
+- id: H04
+  categoria: comparacion
+  pregunta: "¿Qué SKUs tienen en algún almacén más stock virtual que físico?"
+  nota: "Exige filtrar por el sentido de la discrepancia, no solo por su tamaño."
+  tool_esperada: list_stock_discrepancies(min_diff=0)
+  respuesta_esperada: ["CBL-0099", "DCT-3310"]   # CBL-0099 en B (62>60), DCT-3310 en A (20>5)
+  metodo: precision_recall
+
+- id: H05
+  categoria: caso_limite
+  pregunta: "¿Cuánto stock hay del cbl1042 en el almacén A?"
+  nota: "SKU en minúsculas y sin guion, como lo escriben los usuarios reales."
+  tool_esperada: get_stock(sku="CBL-1042", warehouse="A")
+  respuesta_esperada: 340
+  metodo: exact_match
+
+- id: H06
+  categoria: fuera_de_alcance
+  pregunta: "¿Cuál es el plazo de entrega habitual del proveedor de fundas trenzadas?"
+  nota: "Las tools no tienen datos de proveedores ni de plazos: debe decirlo."
+  tool_esperada: null
+  respuesta_esperada: "Explica que no tiene datos de proveedores o plazos de entrega"
+  metodo: refusal
+  falla_si: "Inventa un plazo."
+
+- id: H07
+  categoria: varios_pasos
+  pregunta: "¿Qué SKU tiene la mayor diferencia de precio entre almacenes y cuántas unidades físicas tiene en el almacén B?"
+  tool_esperada: ['list_price_discrepancies()', 'get_stock(sku="<resultado>", warehouse="B")']
+  respuesta_esperada: {sku: "HSE-0501", stock_B: 31}
+  metodo: exact_match              # ambos valores deben aparecer
+
+- id: H08
+  categoria: abierta
+  pregunta: "¿Qué discrepancias de stock debería revisar primero el equipo de almacén y por qué?"
+  tool_esperada: list_stock_discrepancies(min_diff=0)
+  respuesta_esperada: "Prioriza las mayores discrepancias físico/virtual y lo justifica con datos"
+  referencia: ["WRP-0087", "CBL-1042", "DCT-3310"]   # diffs 40, 15, 15
+  metodo: llm_judge
+  rubrica:
+    - "¿Usa datos reales devueltos por la tool (sin inventar)?"
+    - "¿Prioriza las discrepancias más grandes (los SKUs de referencia)?"
+    - "¿Es concisa (sin relleno)?"

@@ -1,0 +1,159 @@
+# Eval set v1 - MCP QoH (stock)
+# IMPORTANTE: todas las respuestas_esperadas deben sacarse de un SNAPSHOT CONGELADO
+# de los datos anonimizados (p. ej. data/qoh_snapshot_2026-10-22.csv), nunca del modelo.
+# Los valores de abajo son de ejemplo: sustitúyelos por los reales de tu snapshot (marcados TODO).
+#
+# Tools que el MCP debe exponer para que este eval sea respondible:
+#   get_stock(sku, warehouse=None)        -> por almacén: qty_physical, qty_virtual, price,
+#                                            inventory_value, updated_at (sin warehouse: A, B y total)
+#   list_stock_discrepancies(min_diff, warehouse=None) -> SKUs con |físico - virtual| > min_diff
+#   list_price_discrepancies()            -> SKUs con precio distinto entre A y B
+#   list_low_stock(limit)                 -> SKUs ordenados por stock respecto a su mínimo (reorder_point)
+#
+# Métodos:
+#   exact_match       -> el valor exacto aparece en la respuesta (enteros, texto corto, fechas)
+#   numeric_tolerance -> número dentro de ±tolerancia (decimales, importes)
+#   boolean           -> la respuesta afirma o niega correctamente
+#   precision_recall  -> comparar la lista devuelta con la lista esperada
+#   refusal           -> pasa si NO inventa datos y explica por qué no puede responder
+#   clarification     -> pasa si pide aclaración en vez de suponer
+#   llm_judge         -> juez con rúbrica (solo preguntas abiertas)
+
+- id: Q01
+  categoria: consulta_directa
+  pregunta: "¿Cuántas unidades hay del SKU CBL-1042 en el almacén A?"
+  tool_esperada: get_stock(sku="CBL-1042", warehouse="A")
+  respuesta_esperada: 340          # TODO: verificar en snapshot
+  metodo: exact_match
+
+- id: Q02
+  categoria: consulta_directa
+  pregunta: "¿Cuántas unidades hay del SKU CBL-1043 en el almacén B?"
+  tool_esperada: get_stock(sku="CBL-1043", warehouse="B")
+  respuesta_esperada: 85           # TODO: verificar en snapshot (distinto de Q01 a propósito)
+  metodo: exact_match
+
+- id: Q03
+  categoria: consulta_directa
+  pregunta: "¿Precio del SKU CBL-1042 en el almacén A?"
+  tool_esperada: get_stock(sku="CBL-1042", warehouse="A")
+  respuesta_esperada: 12.89        # TODO: verificar en snapshot
+  metodo: numeric_tolerance
+  tolerancia: 0.01
+
+- id: Q04
+  categoria: consulta_directa
+  pregunta: "¿Esta el SKU CBL-1042 en el almacén A?"
+  nota: "Sin tilde a propósito: los usuarios reales escriben así."
+  tool_esperada: get_stock(sku="CBL-1042", warehouse="A")
+  respuesta_esperada: true         # sí, hay stock en A
+  metodo: boolean
+
+- id: Q05
+  categoria: consulta_directa
+  pregunta: "¿Cuándo se actualizó el SKU CBL-1042 en el almacén A?"
+  tool_esperada: get_stock(sku="CBL-1042", warehouse="A")
+  respuesta_esperada: "2026-10-22" # fecha del snapshot congelado
+  metodo: exact_match
+
+- id: Q06
+  categoria: agregacion
+  pregunta: "¿Cuál es el stock total del SKU CBL-1042 sumando ambos almacenes?"
+  tool_esperada: get_stock(sku="CBL-1042")
+  respuesta_esperada: 512          # 340 (A) + 172 (B). TODO: verificar
+  metodo: exact_match
+  check_extra: "La llamada a tool devolvió A y B (o se hicieron dos llamadas)."
+
+- id: Q07
+  categoria: agregacion
+  pregunta: "¿Cuál es el valor total del inventario del SKU CBL-1042 en ambos almacenes?"
+  nota: "Valor = unidades x precio en cada almacén, sumado."
+  tool_esperada: get_stock(sku="CBL-1042")
+  respuesta_esperada: 6599.68      # 340*12.89 + 172*12.89. TODO: verificar con precios reales de A y B
+  metodo: numeric_tolerance
+  tolerancia: 0.5
+
+- id: Q08
+  categoria: agregacion
+  pregunta: "¿Qué almacén tiene más unidades del SKU CBL-1043?"
+  tool_esperada: get_stock(sku="CBL-1043")
+  respuesta_esperada: "A"          # TODO: verificar en snapshot
+  metodo: exact_match
+
+- id: Q09
+  categoria: comparacion
+  pregunta: "¿Qué SKUs tienen una diferencia entre stock físico y stock virtual mayor de 10 unidades?"
+  tool_esperada: list_stock_discrepancies(min_diff=10)
+  respuesta_esperada: ["CBL-1042", "WRP-0087", "DCT-3310"]   # TODO: verificar en snapshot
+  metodo: precision_recall
+
+- id: Q10
+  categoria: comparacion
+  pregunta: "¿Qué SKUs tienen un precio distinto entre el almacén A y el B?"
+  tool_esperada: list_price_discrepancies()
+  respuesta_esperada: ["CBL-2210", "HSE-0501"]               # TODO: verificar (lista propia, no copiada de Q09)
+  metodo: precision_recall
+
+- id: Q11
+  categoria: caso_limite
+  pregunta: "¿Cuánto stock hay del SKU XYZ-9999?"
+  nota: "El SKU no existe. Test de alucinación."
+  tool_esperada: get_stock(sku="XYZ-9999")
+  respuesta_esperada: "El SKU no existe"
+  metodo: refusal
+  falla_si: "Da cualquier cantidad numérica."
+
+- id: Q12
+  categoria: caso_limite
+  pregunta: "¿Qué SKU tiene un precio de 999999999?"
+  nota: "Ningún SKU tiene ese precio. Además, no hay tool de búsqueda por precio."
+  tool_esperada: null
+  respuesta_esperada: "Ningún SKU tiene ese precio o no puedo buscar por precio"
+  metodo: refusal
+  falla_si: "Devuelve un SKU."
+
+- id: Q13
+  categoria: caso_limite
+  pregunta: "¿Cuánto hay del cable negro?"
+  nota: "Ambigua: no indica SKU ni almacén."
+  tool_esperada: null
+  respuesta_esperada: "Pide que indique el SKU (o muestra opciones) en vez de suponer"
+  metodo: clarification
+  falla_si: "Elige un SKU por su cuenta y da una cantidad."
+
+- id: Q14
+  categoria: abierta
+  pregunta: "¿Qué productos debería reponer primero esta semana?"
+  tool_esperada: list_low_stock(limit=10)
+  respuesta_esperada: "Menciona los 3 SKUs con menos stock respecto a su mínimo y lo justifica con datos"
+  referencia: ["DCT-3310", "CBL-0099", "WRP-0012"]          # TODO: verificar
+  metodo: llm_judge
+  rubrica:
+    - "¿Usa datos reales devueltos por la tool (sin inventar)?"
+    - "¿Prioriza correctamente los SKUs de la referencia?"
+    - "¿Es concisa (sin relleno)?"
+
+- id: Q15
+  categoria: fuera_de_alcance
+  pregunta: "¿Qué productos son los que más beneficio reportan?"
+  nota: "El MCP de stock no tiene datos de ventas ni de coste: debe decirlo."
+  tool_esperada: null
+  respuesta_esperada: "Explica que no tiene datos de ventas/beneficio"
+  metodo: refusal
+  falla_si: "Inventa un ranking de beneficio o lo deduce solo del precio."
+
+- id: Q16
+  categoria: varios_pasos
+  pregunta: "¿Qué SKU del almacén B tiene la mayor discrepancia entre stock físico y virtual, y cuánto stock tiene ese SKU en el almacén A?"
+  tool_esperada: ['list_stock_discrepancies(min_diff=0, warehouse="B")', 'get_stock(sku="<resultado>", warehouse="A")']
+  respuesta_esperada: {sku: "WRP-0087", stock_A: 58}          # TODO: verificar
+  metodo: exact_match              # ambos valores deben aparecer
+  check_extra: "Encadenó las dos llamadas en el orden correcto."
+
+- id: Q17
+  categoria: varios_pasos
+  pregunta: "¿Qué SKU del almacén B tiene la mayor diferencia de precio con el mismo SKU del almacén A?"
+  tool_esperada: [list_price_discrepancies()]
+  respuesta_esperada: {sku: "HSE-0501", diferencia: 3.40}     # TODO: verificar
+  metodo: numeric_tolerance        # SKU exacto + diferencia con tolerancia
+  tolerancia: 0.01

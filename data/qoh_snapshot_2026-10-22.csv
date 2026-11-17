@@ -1,0 +1,17 @@
+sku,description,warehouse,qty_physical,qty_virtual,reorder_point,price,updated_at
+CBL-1042,Cable organizer sleeve 1in black,A,340,325,50,12.89,2026-10-22
+CBL-1042,Cable organizer sleeve 1in black,B,172,172,50,12.89,2026-10-22
+CBL-1043,Cable organizer sleeve 2in black,A,120,118,40,15.49,2026-10-22
+CBL-1043,Cable organizer sleeve 2in black,B,85,85,40,15.49,2026-10-22
+CBL-0099,Cable tie mount black,A,2,2,30,0.89,2026-10-21
+CBL-0099,Cable tie mount black,B,60,62,30,0.89,2026-10-21
+CBL-2210,Split loom tubing 1/2in,A,410,405,100,4.50,2026-10-22
+CBL-2210,Split loom tubing 1/2in,B,390,390,100,4.75,2026-10-22
+WRP-0087,Braided wrap 3/4in,A,58,58,20,7.99,2026-10-20
+WRP-0087,Braided wrap 3/4in,B,200,160,20,7.99,2026-10-20
+WRP-0012,Spiral wrap 1/4in,A,8,8,40,3.25,2026-10-22
+WRP-0012,Spiral wrap 1/4in,B,75,70,40,3.25,2026-10-22
+DCT-3310,Wire duct 1x2in gray,A,5,20,50,9.99,2026-10-19
+DCT-3310,Wire duct 1x2in gray,B,90,88,50,9.99,2026-10-19
+HSE-0501,Heat shrink kit 560pcs,A,44,44,15,9.10,2026-10-22
+HSE-0501,Heat shrink kit 560pcs,B,31,31,15,12.50,2026-10-22
