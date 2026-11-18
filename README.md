@@ -74,6 +74,9 @@ evaluador cuando el fallo era de medición, con un arreglo general y un test de 
 | `run_evals.py` | Bucle de agente (Ollama + MCP), reintentos ante caídas, LLM juez para preguntas abiertas, informe JSON |
 | `compare_runs.py` | Compara dos ejecuciones pregunta a pregunta (arreglos y regresiones) |
 | `regrade.py` | Repuntúa una ejecución guardada con los graders actuales, sin volver a llamar al modelo |
+| `trace_viewer.py` | Visor de trazas en Streamlit con anotación humana (PASS/FAIL, crítica, modo de fallo) y conteo de modos de fallo |
+| `validate_judge.py` | Valida el LLM juez contra las etiquetas humanas: TPR, TNR y kappa en DEV y TEST |
+| `labels/human_labels.json` | Etiquetas humanas del experto (se crea al anotar) |
 | `tests/` | Tests del evaluador (respuesta buena pasa, mala falla) y end-to-end sin LLM |
 | `results/published/` | Informes JSON brutos de las ejecuciones citadas; `regraded/` = repuntuados con g5 |
 
@@ -87,6 +90,10 @@ python -m pytest tests -q                                   # 1) el evaluador fu
 python run_evals.py --prompt v3 --num-ctx 8192 --ground-check   # 2) eval de desarrollo
 python run_evals.py --eval eval_holdout_qoh.yaml --prompt v3 --num-ctx 8192 --ground-check
 python compare_runs.py                                      # compara las dos últimas ejecuciones
+
+streamlit run trace_viewer.py                               # revisar y etiquetar trazas
+python validate_judge.py                                    # ¿coincide el juez con el experto?
+python validate_judge.py --fewshot                          # juez con las críticas de DEV como ejemplos
 ```
 
 Opciones: `--model`, `--judge-model`, `--only Q01,Q11`, `--cpu`, `--prompt v2|v3`,
@@ -110,7 +117,8 @@ Opciones: `--model`, `--judge-model`, `--only Q01,Q11`, `--cpu`, `--prompt v2|v3
 - Eval pequeño (17 + 8 preguntas) y una ejecución por configuración: el modelo no es del todo
   determinista, así que las diferencias de una pregunta (≈6 puntos) no son significativas.
 - El groundedness es una heurística numérica: puede marcar datos derivados (porcentajes) como no respaldados.
-- El juez es el mismo modelo de 7B que se evalúa.
+- El juez es el mismo modelo de 7B que se evalúa. Su validación contra etiquetas humanas
+  (`validate_judge.py`) está en curso; ver resultados más abajo cuando estén.
 
 ## Licencia
 
