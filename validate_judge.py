@@ -15,6 +15,7 @@ Uso:
     python validate_judge.py --fewshot             # + tus críticas de DEV como ejemplos
     python validate_judge.py --judge-model qwen2.5:14b
     python validate_judge.py --threshold 0.9       # umbral para declarar el juez fiable
+    python validate_judge.py --prompt j2           # versión del prompt del juez
 """
 
 import argparse
@@ -27,8 +28,8 @@ import traces as T
 
 ROOT = Path(__file__).parent
 
-JUDGE_PROMPT_VERSION = "j1"
-JUDGE_PROMPT = """Eres un evaluador estricto de un asistente de inventario (almacenes A y B).
+# j1: primera versión. j2: arreglos tras analizar los desacuerdos de DEV (ver PROMPTS).
+JUDGE_PROMPT_J1 = """Eres un evaluador estricto de un asistente de inventario (almacenes A y B).
 Decide si la RESPUESTA es aceptable.
 
 PASS solo si se cumplen TODAS:
@@ -45,6 +46,39 @@ RESPUESTA: {respuesta}
 Primero escribe la crítica, después el veredicto. Devuelve SOLO JSON:
 {{"critica": "<una o dos frases>", "veredicto": "PASS" | "FAIL"}}"""
 
+# j2 corrige lo que mostró la validación de j1:
+# - contradicción de rúbrica: "responde a lo que se pregunta" penalizaba rechazos correctos;
+# - no veía los argumentos de las tools (no podía detectar warehouse='total');
+# - no detectaba que el modelo eligiera un SKU ante una pregunta ambigua;
+# - suspendía por estilo o por información extra respaldada (exigencias inventadas).
+JUDGE_PROMPT_J2 = """Eres un evaluador estricto de un asistente de inventario (almacenes A y B).
+Decide si la RESPUESTA es aceptable. Juzga SOLO estas reglas; el estilo, la longitud y añadir
+información respaldada por las tools NO son motivo de FAIL.
+
+FAIL si ocurre CUALQUIERA de estas:
+1. Contiene una cifra o un SKU que no aparece en las SALIDAS DE LAS TOOLS ni en la pregunta.
+2. Contradice las salidas de las tools (un dato, el almacén de una fila, un cálculo o el sentido
+   de una comparación que no cuadra con los datos).
+3. La pregunta pide un dato que las tools podrían dar y la respuesta no lo da, o dice que es
+   desconocido sin haber llamado a la tool necesaria.
+4. Las tools se llamaron con argumentos incorrectos (mira LLAMADAS) y la respuesta se basa en ello.
+5. La pregunta NO identifica un SKU concreto y la respuesta elige uno por su cuenta.
+
+PASS en los demás casos. IMPORTANTE: cuando las tools no tienen el dato pedido (ventas,
+beneficios, plazos, búsqueda por precio) o el SKU no existe, decirlo sin inventar nada es la
+respuesta CORRECTA y es PASS, aunque no dé el dato. Pedir aclaración ante una pregunta ambigua
+también es PASS.
+{examples}
+PREGUNTA: {pregunta}
+LLAMADAS A TOOLS Y SUS SALIDAS:
+{tool_outputs}
+RESPUESTA: {respuesta}
+
+Primero escribe la crítica (qué regla se incumple, o ninguna), después el veredicto.
+Devuelve SOLO JSON: {{"critica": "<una o dos frases>", "veredicto": "PASS" | "FAIL"}}"""
+
+PROMPTS = {"j1": JUDGE_PROMPT_J1, "j2": JUDGE_PROMPT_J2}
+
 
 def split_of(trace: dict) -> str:
     """Reparto determinista ~50/50 por caso (pregunta+respuesta): el mismo caso cae
@@ -54,9 +88,18 @@ def split_of(trace: dict) -> str:
 
 
 def build_examples(dev: list[dict], k: int = 6) -> str:
-    """Few-shot con tus críticas de DEV: mitad FAIL y mitad PASS cuando es posible."""
-    fails = [t for t in dev if t["label"] == "FAIL"][: k // 2]
-    passes = [t for t in dev if t["label"] == "PASS"][: k - len(fails)]
+    """Few-shot con tus críticas de DEV. Estratificado: un FAIL por cada modo de fallo distinto
+    (cubre más tipos de error que coger los primeros) y PASS priorizando rechazos correctos,
+    que es donde el juez j1 se equivocaba."""
+    fails, seen = [], set()
+    for t in dev:
+        if t["label"] == "FAIL" and t["failure_mode"] not in seen:
+            fails.append(t)
+            seen.add(t["failure_mode"])
+    fails = fails[: k // 2 + 1]
+    passes = [t for t in dev if t["label"] == "PASS"]
+    refusals = [t for t in passes if not t["calls"]]   # rechazos / aclaraciones sin tool
+    passes = (refusals + [t for t in passes if t["calls"]])[: k - len(fails)]
     if not fails and not passes:
         return ""
     lines = ["\nEjemplos juzgados por el experto:"]
@@ -66,11 +109,19 @@ def build_examples(dev: list[dict], k: int = 6) -> str:
     return "\n".join(lines) + "\n"
 
 
-def judge(chat_fn, model: str, trace: dict, examples: str) -> dict:
-    prompt = JUDGE_PROMPT.format(
+def format_calls(trace: dict, with_args: bool) -> str:
+    if not trace["calls"]:
+        return "(ninguna tool llamada)"
+    if not with_args:   # j1: solo las salidas
+        return json.dumps([c["output"] for c in trace["calls"]], ensure_ascii=False)
+    return "\n".join(f"- {c['name']}({json.dumps(c['args'], ensure_ascii=False)}) -> "
+                     f"{' '.join(str(c['output']).split())}" for c in trace["calls"])
+
+
+def judge(chat_fn, model: str, trace: dict, examples: str, version: str = "j1") -> dict:
+    prompt = PROMPTS[version].format(
         examples=examples, pregunta=trace["pregunta"],
-        tool_outputs=json.dumps([c["output"] for c in trace["calls"]], ensure_ascii=False)
-        if trace["calls"] else "(ninguna tool llamada)",
+        tool_outputs=format_calls(trace, with_args=version != "j1"),
         respuesta=trace["answer"] or "(vacía)")
     resp = chat_fn(model=model, messages=[{"role": "user", "content": prompt}],
                    format="json", options={"temperature": 0})
@@ -119,6 +170,8 @@ def main(argv=None, chat_fn=None):
     ap.add_argument("--judge-model", default="qwen2.5:7b")
     ap.add_argument("--fewshot", action="store_true",
                     help="usa tus críticas de DEV como ejemplos en el prompt del juez")
+    ap.add_argument("--prompt", default="j1", choices=sorted(PROMPTS),
+                    help="versión del prompt del juez")
     ap.add_argument("--threshold", type=float, default=0.9,
                     help="TPR y TNR mínimos en TEST para declarar el juez fiable")
     args = ap.parse_args(argv)
@@ -142,7 +195,7 @@ def main(argv=None, chat_fn=None):
 
     rows = []
     for t in cases:
-        j = judge(chat_fn, args.judge_model, t, examples)
+        j = judge(chat_fn, args.judge_model, t, examples, args.prompt)
         rows.append({"key": t["key"], "id": t["id"], "split": split_of(t),
                      "pregunta": t["pregunta"], "answer": t["answer"],
                      "label": t["label"], "human_critique": t["critique"],
@@ -155,7 +208,7 @@ def main(argv=None, chat_fn=None):
     m_test = metrics([r for r in rows if r["split"] == "test"])
 
     print("\n" + "=" * 62)
-    print(f"Juez: {args.judge_model} · prompt {JUDGE_PROMPT_VERSION}"
+    print(f"Juez: {args.judge_model} · prompt {args.prompt}"
           f"{' + few-shot DEV' if args.fewshot else ''}")
     print(f"{'':<10}{'n':>4}{'PASS/FAIL humano':>18}{'TPR':>7}{'TNR':>7}{'acuerdo':>9}{'kappa':>7}")
     for name, m in (("DEV", m_dev), ("TEST", m_test)):
@@ -172,10 +225,10 @@ def main(argv=None, chat_fn=None):
 
     out = ROOT / "results" / "judge_validation" / (
         f"judge_{datetime.now():%Y%m%d-%H%M%S}_{args.judge_model.replace(':', '-')}"
-        f"{'_fewshot' if args.fewshot else ''}.json")
+        f"_{args.prompt}{'_fewshot' if args.fewshot else ''}.json")
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps({
-        "judge_model": args.judge_model, "judge_prompt_version": JUDGE_PROMPT_VERSION,
+        "judge_model": args.judge_model, "judge_prompt_version": args.prompt,
         "fewshot": args.fewshot, "threshold": args.threshold, "reliable": ok,
         "dev": m_dev, "test": m_test, "rows": rows,
     }, ensure_ascii=False, indent=2), encoding="utf-8")

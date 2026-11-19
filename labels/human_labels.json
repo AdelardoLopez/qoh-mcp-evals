@@ -1,0 +1,267 @@
+{
+  "run_20261117-131236_qwen2.5-7b.json::H01": {
+    "label": "PASS",
+    "critique": "dato correcto y respaldado por la tool”.",
+    "failure_mode": ""
+  },
+  "run_20261117-131236_qwen2.5-7b.json::H04": {
+    "label": "FAIL",
+    "critique": "Lista todas las discrepancias como si el virtual fuera mayor; en WRP-0087 es al revés (200 físicas, 160 virtuales). Solo CBL-0099 y DCT-3310 cumplen",
+    "failure_mode": "sentido de la discrepancia"
+  },
+  "run_20261117-131236_qwen2.5-7b.json::H02": {
+    "label": "PASS",
+    "critique": "es correcto el precio",
+    "failure_mode": ""
+  },
+  "run_20261117-131236_qwen2.5-7b.json::H03": {
+    "label": "PASS",
+    "critique": "correcto la suma",
+    "failure_mode": ""
+  },
+  "run_20261117-131236_qwen2.5-7b.json::H05": {
+    "label": "PASS",
+    "critique": "correcto el dato",
+    "failure_mode": ""
+  },
+  "run_20261117-131236_qwen2.5-7b.json::H06": {
+    "label": "PASS",
+    "critique": "Rechazo correcto: reconoce que no tiene datos de plazos, no inventa nada y ofrece consultar el stock.”",
+    "failure_mode": ""
+  },
+  "run_20261117-131236_qwen2.5-7b.json::H07": {
+    "label": "PASS",
+    "critique": "los datos que dan son correctos",
+    "failure_mode": ""
+  },
+  "run_20261117-131236_qwen2.5-7b.json::H08": {
+    "label": "PASS",
+    "critique": "elige bien el numero de discrepancias cuando es mayor que  10",
+    "failure_mode": ""
+  },
+  "run_20261116-163733_qwen2.5-7b.json::Q08": {
+    "label": "PASS",
+    "critique": "el dato es correcto",
+    "failure_mode": ""
+  },
+  "run_20261116-163733_qwen2.5-7b.json::Q09": {
+    "label": "PASS",
+    "critique": "dato correcto",
+    "failure_mode": ""
+  },
+  "run_20261116-163733_qwen2.5-7b.json::Q10": {
+    "label": "PASS",
+    "critique": "dato correcto",
+    "failure_mode": ""
+  },
+  "run_20261116-163733_qwen2.5-7b.json::Q11": {
+    "label": "PASS",
+    "critique": "exacto, no existe",
+    "failure_mode": ""
+  },
+  "run_20261116-163733_qwen2.5-7b.json::Q12": {
+    "label": "PASS",
+    "critique": "excede el limite marcado y lo dice",
+    "failure_mode": ""
+  },
+  "run_20261116-163733_qwen2.5-7b.json::Q13": {
+    "label": "PASS",
+    "critique": "correcto necesitamos un sku o algo mas concreto",
+    "failure_mode": ""
+  },
+  "run_20261116-163733_qwen2.5-7b.json::Q14": {
+    "label": "PASS",
+    "critique": "correcto",
+    "failure_mode": ""
+  },
+  "run_20261116-163733_qwen2.5-7b.json::Q15": {
+    "label": "PASS",
+    "critique": "correcto",
+    "failure_mode": ""
+  },
+  "run_20261116-163733_qwen2.5-7b.json::Q16": {
+    "label": "PASS",
+    "critique": "correcto",
+    "failure_mode": ""
+  },
+  "run_20261116-163733_qwen2.5-7b.json::Q17": {
+    "label": "PASS",
+    "critique": "correcto",
+    "failure_mode": ""
+  },
+  "run_20261116-162713_qwen2.5-7b.json::Q07": {
+    "label": "PASS",
+    "critique": "correcto",
+    "failure_mode": ""
+  },
+  "run_20261116-162713_qwen2.5-7b.json::Q06": {
+    "label": "PASS",
+    "critique": "correcto",
+    "failure_mode": ""
+  },
+  "run_20261104-140809_qwen2.5-7b.json::Q01": {
+    "label": "PASS",
+    "critique": "correcto",
+    "failure_mode": ""
+  },
+  "run_20261104-140809_qwen2.5-7b.json::Q02": {
+    "label": "PASS",
+    "critique": "correcto",
+    "failure_mode": ""
+  },
+  "run_20261104-140809_qwen2.5-7b.json::Q03": {
+    "label": "PASS",
+    "critique": "correcto",
+    "failure_mode": ""
+  },
+  "run_20261104-140809_qwen2.5-7b.json::Q04": {
+    "label": "PASS",
+    "critique": "correcto",
+    "failure_mode": ""
+  },
+  "run_20261104-140809_qwen2.5-7b.json::Q05": {
+    "label": "PASS",
+    "critique": "si que cuadra la fecha \"updated_at\": \"2026-10-22\"",
+    "failure_mode": ""
+  },
+  "run_20261104-140809_qwen2.5-7b.json::Q06": {
+    "label": "PASS",
+    "critique": "correcyo",
+    "failure_mode": ""
+  },
+  "run_20261104-140809_qwen2.5-7b.json::Q07": {
+    "label": "FAIL",
+    "critique": "No suma los dos almacenes y calcula mal: 340 × 12,89 = 4.382,60, no 4.342,60.",
+    "failure_mode": "calcula mal"
+  },
+  "run_20261104-140809_qwen2.5-7b.json::Q08": {
+    "label": "PASS",
+    "critique": "correcto",
+    "failure_mode": ""
+  },
+  "run_20261104-140809_qwen2.5-7b.json::Q10": {
+    "label": "PASS",
+    "critique": "correcto",
+    "failure_mode": ""
+  },
+  "run_20261104-140809_qwen2.5-7b.json::Q12": {
+    "label": "PASS",
+    "critique": "bien contestsado",
+    "failure_mode": ""
+  },
+  "run_20261104-140809_qwen2.5-7b.json::Q13": {
+    "label": "FAIL",
+    "critique": "necesitamos un sku o algo mas concreto",
+    "failure_mode": "no pide aclaración"
+  },
+  "run_20261104-140809_qwen2.5-7b.json::Q14": {
+    "label": "FAIL",
+    "critique": "No llama a list_low_stock y pide al usuario un ratio que no necesita",
+    "failure_mode": "no usa la tool"
+  },
+  "run_20261104-140809_qwen2.5-7b.json::Q15": {
+    "label": "PASS",
+    "critique": "bien contestsado",
+    "failure_mode": ""
+  },
+  "run_20261104-140809_qwen2.5-7b.json::Q16": {
+    "label": "FAIL",
+    "critique": "Dice que CBL-1042 es del almacén B, pero esa fila es del A; la mayor discrepancia en B es WRP-0087.",
+    "failure_mode": "lee mal la salida de la tool"
+  },
+  "run_20261104-140809_qwen2.5-7b.json::Q17": {
+    "label": "PASS",
+    "critique": "correcto",
+    "failure_mode": ""
+  },
+  "run_20261104-151921_qwen2.5-7b.json::Q16": {
+    "label": "FAIL",
+    "critique": "da el stock de B pero se inventa el del A",
+    "failure_mode": "inventa cifra"
+  },
+  "run_20261104-151921_qwen2.5-7b.json::Q07": {
+    "label": "PASS",
+    "critique": "correctyo",
+    "failure_mode": ""
+  },
+  "run_20261104-151921_qwen2.5-7b.json::Q01": {
+    "label": "PASS",
+    "critique": "correcto",
+    "failure_mode": ""
+  },
+  "run_20261104-151921_qwen2.5-7b.json::Q04": {
+    "label": "PASS",
+    "critique": "correcto",
+    "failure_mode": ""
+  },
+  "run_20261104-151921_qwen2.5-7b.json::Q05": {
+    "label": "PASS",
+    "critique": "correcto",
+    "failure_mode": ""
+  },
+  "run_20261104-151921_qwen2.5-7b.json::Q06": {
+    "label": "PASS",
+    "critique": "correcto",
+    "failure_mode": ""
+  },
+  "run_20261104-142934_qwen2.5-7b.json::Q16": {
+    "label": "FAIL",
+    "critique": "Se salta get_stock para el almacén A e inventa 300 unidades (el dato real es 58)",
+    "failure_mode": "inventa cifra"
+  },
+  "run_20261104-142934_qwen2.5-7b.json::Q14": {
+    "label": "FAIL",
+    "critique": "Responde en chino una frase sin sentido; no usa los datos que recibió",
+    "failure_mode": "cambia de idioma"
+  },
+  "run_20261104-142934_qwen2.5-7b.json::Q11": {
+    "label": "FAIL",
+    "critique": "Copia el ejemplo del prompt y pide un SKU que ya estaba en la pregunta",
+    "failure_mode": "copia el ejemplo"
+  },
+  "run_20261104-142934_qwen2.5-7b.json::Q04": {
+    "label": "FAIL",
+    "critique": "Escribe ‘CallChecka’ como texto en lugar de llamar a get_stock; no responde",
+    "failure_mode": "no usa la tool"
+  },
+  "run_20261105-170309_llama3.1-8b.json::Q06": {
+    "label": "FAIL",
+    "critique": "Llama a get_stock con warehouse='total' y concluye que el SKU no existe",
+    "failure_mode": "usa mal la tool"
+  },
+  "run_20261105-170309_llama3.1-8b.json::Q07": {
+    "label": "FAIL",
+    "critique": "Suma mal: el valor correcto es 6.599,68, no 6.600,68",
+    "failure_mode": "calcula mal"
+  },
+  "run_20261105-170309_llama3.1-8b.json::Q08": {
+    "label": "FAIL",
+    "critique": "Suma stock físico y virtual (238) como si fueran unidades.”",
+    "failure_mode": "mezcla físico y virtual"
+  },
+  "run_20261105-170309_llama3.1-8b.json::Q12": {
+    "label": "PASS",
+    "critique": "",
+    "failure_mode": ""
+  },
+  "run_20261105-170309_llama3.1-8b.json::Q13": {
+    "label": "FAIL",
+    "critique": "Elige CBL-1042 por su cuenta ante una pregunta ambigua.",
+    "failure_mode": "no pide aclaración"
+  },
+  "run_20261105-170309_llama3.1-8b.json::Q14": {
+    "label": "PASS",
+    "critique": "",
+    "failure_mode": ""
+  },
+  "run_20261105-170309_llama3.1-8b.json::Q15": {
+    "label": "PASS",
+    "critique": "",
+    "failure_mode": ""
+  },
+  "run_20261105-170309_llama3.1-8b.json::Q16": {
+    "label": "FAIL",
+    "critique": "No consulta el almacén A y dice que el dato es desconocido",
+    "failure_mode": "no completa los pasos"
+  }
+}

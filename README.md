@@ -36,6 +36,31 @@ negativo del evaluador en H06 que se corrigió de forma general (ver abajo); se 
 Comparación de modelos (mismo prompt v3 y mismo eval, g5): `qwen2.5:7b` 94 % / 26 s frente a
 `llama3.1:8b` 71 % / 54 s. El modelo más pequeño gana.
 
+### Validación del LLM juez contra etiquetas humanas
+
+53 trazas distintas etiquetadas a mano (38 PASS / 15 FAIL) con `trace_viewer.py`, repartidas de
+forma fija en DEV (24) y TEST (29). Positivo = PASS; el TNR mide si el juez caza los fallos.
+
+| Juez (qwen2.5:7b) | TPR TEST | TNR TEST | Kappa TEST | ¿Fiable (≥ 90 %)? |
+|---|---|---|---|---|
+| j1 zero-shot | 71 % | 75 % | 0,40 | No |
+| j1 + few-shot con críticas de DEV | 86 % | 50 % | 0,37 | No |
+| j2 (rúbrica corregida + argumentos de las tools) | pendiente | pendiente | pendiente | — |
+
+Lo que mostró el análisis de los desacuerdos:
+- **Con 4 FAIL, el few-shot parecía una gran mejora (kappa 0,07 → 0,43); con 15 FAIL no lo es.**
+  Con pocos negativos, el TNR solo puede valer 0 %, 50 % o 100 %: las muestras pequeñas engañan.
+- **Los fallos del juez eran sobre todo de diseño, no de capacidad:** la rúbrica se contradecía
+  ("responde a lo que se pregunta" suspendía rechazos correctos, 5 casos), el juez no veía los
+  argumentos de las tools (no podía detectar `warehouse="total"`) y no tenía regla para la
+  pregunta ambigua. `j2` corrige las tres.
+- **Lo que el juez no sabe hacer (verificar cálculos o el sentido de una comparación) ya lo
+  hacen los graders deterministas.** El juez solo se usa donde el código no llega.
+- El juez también destapó **un error de etiquetado humano** (Q14 de llama: omite un SKU bajo
+  mínimos y lo etiqueté como PASS), pendiente de revisar.
+- Por eso las cifras de este README salen de graders deterministas; el juez solo decide en las
+  2 preguntas abiertas, y con su validación documentada.
+
 ### Held-out: fallos y cómo se trataron
 
 Regla: el sistema (prompt, tools, modelo) **no se tocó** tras ver el held-out. Solo se corrigió el
@@ -76,7 +101,7 @@ evaluador cuando el fallo era de medición, con un arreglo general y un test de 
 | `regrade.py` | Repuntúa una ejecución guardada con los graders actuales, sin volver a llamar al modelo |
 | `trace_viewer.py` | Visor de trazas en Streamlit con anotación humana (PASS/FAIL, crítica, modo de fallo) y conteo de modos de fallo |
 | `validate_judge.py` | Valida el LLM juez contra las etiquetas humanas: TPR, TNR y kappa en DEV y TEST |
-| `labels/human_labels.json` | Etiquetas humanas del experto (se crea al anotar) |
+| `labels/human_labels.json` | 53 etiquetas humanas del experto (PASS/FAIL, crítica, modo de fallo) |
 | `tests/` | Tests del evaluador (respuesta buena pasa, mala falla) y end-to-end sin LLM |
 | `results/published/` | Informes JSON brutos de las ejecuciones citadas; `regraded/` = repuntuados con g5 |
 
@@ -117,8 +142,9 @@ Opciones: `--model`, `--judge-model`, `--only Q01,Q11`, `--cpu`, `--prompt v2|v3
 - Eval pequeño (17 + 8 preguntas) y una ejecución por configuración: el modelo no es del todo
   determinista, así que las diferencias de una pregunta (≈6 puntos) no son significativas.
 - El groundedness es una heurística numérica: puede marcar datos derivados (porcentajes) como no respaldados.
-- El juez es el mismo modelo de 7B que se evalúa. Su validación contra etiquetas humanas
-  (`validate_judge.py`) está en curso; ver resultados más abajo cuando estén.
+- El juez es el mismo modelo de 7B que se evalúa y no supera el umbral de fiabilidad (ver
+  «Validación del LLM juez»). La partición TEST ya se ha mirado para diseñar j2: una validación
+  limpia de j2 necesita etiquetas nuevas.
 
 ## Licencia
 

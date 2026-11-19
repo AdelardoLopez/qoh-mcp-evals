@@ -91,3 +91,21 @@ def test_viewer_renders():
     at = AppTest.from_file(str(ROOT / "trace_viewer.py"), default_timeout=30).run()
     assert not at.exception
     assert any("Visor de trazas" in t.value for t in at.title)
+
+
+def test_j2_shows_tool_args_and_j1_does_not():
+    trace = {"calls": [{"name": "get_stock", "args": {"sku": "CBL-1042", "warehouse": "total"},
+                        "output": '{"found": false}'}]}
+    assert "warehouse" not in V.format_calls(trace, with_args=False)
+    assert 'get_stock({"sku": "CBL-1042", "warehouse": "total"})' in V.format_calls(trace, with_args=True)
+
+
+def test_fewshot_is_stratified_by_failure_mode(labeled_env):
+    labels = T.load_labels()
+    keys = [k for k, v in labels.items() if v["label"] == "FAIL"][:2]
+    labels[keys[0]]["failure_mode"] = "modo A"
+    labels[keys[1]]["failure_mode"] = "modo B"
+    T.LABELS_PATH.write_text(json.dumps(labels, ensure_ascii=False), encoding="utf-8")
+    dev = T.all_labeled_traces()   # todos como DEV para el test
+    ex = V.build_examples(dev)
+    assert ex.count("VEREDICTO: FAIL") <= 4 and "VEREDICTO: PASS" in ex
