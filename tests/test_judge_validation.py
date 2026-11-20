@@ -70,13 +70,13 @@ def test_validate_end_to_end_with_perfect_and_lazy_judges(labeled_env, monkeypat
         return NS(message=NS(content="{}"))
 
     monkeypatch.chdir(labeled_env)
-    out = V.main(["--threshold", "0.9"], chat_fn=perfect)
+    out = V.main(["--threshold", "0.9", "--out-dir", str(labeled_env / "jv")], chat_fn=perfect)
     assert out["test"]["TPR"] == 1.0 and out["test"]["TNR"] == 1.0 and out["reliable"]
 
     def lazy(model, messages, format=None, options=None):
         return NS(message=NS(content=json.dumps({"critica": "ok", "veredicto": "PASS"})))
 
-    out = V.main([], chat_fn=lazy)
+    out = V.main(["--out-dir", str(labeled_env / "jv")], chat_fn=lazy)
     assert out["test"]["TNR"] == 0.0 and not out["reliable"]
 
 
@@ -109,3 +109,11 @@ def test_fewshot_is_stratified_by_failure_mode(labeled_env):
     dev = T.all_labeled_traces()   # todos como DEV para el test
     ex = V.build_examples(dev)
     assert ex.count("VEREDICTO: FAIL") <= 4 and "VEREDICTO: PASS" in ex
+
+
+def test_tests_do_not_write_reports_into_the_repo(labeled_env):
+    # el informe de prueba de esta suite apareció en results/ del usuario: no debe volver a pasar
+    before = set((ROOT / "results").rglob("judge_*.json"))
+    V.main(["--out-dir", str(labeled_env / "jv")],
+           chat_fn=lambda **k: NS(message=NS(content=json.dumps({"critica": "x", "veredicto": "PASS"}))))
+    assert set((ROOT / "results").rglob("judge_*.json")) == before

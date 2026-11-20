@@ -250,9 +250,9 @@
     "failure_mode": "no pide aclaración"
   },
   "run_20261105-170309_llama3.1-8b.json::Q14": {
-    "label": "PASS",
-    "critique": "",
-    "failure_mode": ""
+    "label": "FAIL",
+    "critique": "Omite WRP-0012, que también está bajo mínimos (8/40), y justifica mal la prioridad.",
+    "failure_mode": "respuesta incompleta"
   },
   "run_20261105-170309_llama3.1-8b.json::Q15": {
     "label": "PASS",

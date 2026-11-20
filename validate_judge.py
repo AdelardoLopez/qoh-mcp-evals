@@ -152,7 +152,8 @@ def metrics(rows: list[dict]) -> dict:
         p_no = ((tn + fp) / n) * ((tn + fn) / n)
         pe = p_yes + p_no
         kappa = (acc - pe) / (1 - pe) if pe < 1 else None
-    return {"n": n, "human_pass": tp + fn, "human_fail": tn + fp,
+    invalid = sum(r["verdict"] == "INVALID" for r in rows)
+    return {"n": n, "human_pass": tp + fn, "human_fail": tn + fp, "invalid": invalid,
             "TPR": tpr, "TNR": tnr, "accuracy": acc, "kappa": kappa,
             "confusion": {"tp": tp, "fn": fn, "tn": tn, "fp": fp}}
 
@@ -172,6 +173,8 @@ def main(argv=None, chat_fn=None):
                     help="usa tus críticas de DEV como ejemplos en el prompt del juez")
     ap.add_argument("--prompt", default="j1", choices=sorted(PROMPTS),
                     help="versión del prompt del juez")
+    ap.add_argument("--out-dir", default=str(ROOT / "results" / "judge_validation"),
+                    help="carpeta del informe (los tests usan una temporal)")
     ap.add_argument("--threshold", type=float, default=0.9,
                     help="TPR y TNR mínimos en TEST para declarar el juez fiable")
     args = ap.parse_args(argv)
@@ -214,6 +217,9 @@ def main(argv=None, chat_fn=None):
     for name, m in (("DEV", m_dev), ("TEST", m_test)):
         print(f"{name:<10}{m['n']:>4}{m['human_pass']:>10}/{m['human_fail']:<7}"
               f"{pct(m['TPR']):>7}{pct(m['TNR']):>7}{pct(m['accuracy']):>9}{num(m['kappa']):>7}")
+    n_invalid = m_dev["invalid"] + m_test["invalid"]
+    if n_invalid:
+        print(f"Aviso: {n_invalid} respuestas del juez sin formato válido (cuentan como error del juez).")
     if m_test["human_fail"] < 5:
         print("Aviso: menos de 5 FAIL en TEST; el TNR es poco fiable. Etiqueta más fallos.")
     ok = (m_test["TPR"] or 0) >= args.threshold and (m_test["TNR"] or 0) >= args.threshold
@@ -223,7 +229,7 @@ def main(argv=None, chat_fn=None):
     if disagreements:
         print("Desacuerdos: " + ", ".join(f"{r['id']}({r['split']})" for r in disagreements))
 
-    out = ROOT / "results" / "judge_validation" / (
+    out = Path(args.out_dir) / (
         f"judge_{datetime.now():%Y%m%d-%H%M%S}_{args.judge_model.replace(':', '-')}"
         f"_{args.prompt}{'_fewshot' if args.fewshot else ''}.json")
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -232,7 +238,7 @@ def main(argv=None, chat_fn=None):
         "fewshot": args.fewshot, "threshold": args.threshold, "reliable": ok,
         "dev": m_dev, "test": m_test, "rows": rows,
     }, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"Informe: {out.relative_to(ROOT)}")
+    print(f"Informe: {out}")
     return {"dev": m_dev, "test": m_test, "reliable": ok, "rows": rows}
 
 
